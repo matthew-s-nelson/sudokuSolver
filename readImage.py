@@ -58,17 +58,34 @@ def crop_image(border, image):
     x, y, width, height = cv2.boundingRect(border)
 
     cropped_board = image[y:y+height, x:x+width]
-    # cv2.imshow('cropped', cropped_board)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow('cropped', cropped_board)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     return cropped_board
 
+def split_boxes(image):
+    height = image.shape[0]
+    width = image.shape[1]
+    box_height = height/9
+    box_width = width/9
+    boxes = []
+    for y in range(1, 10):
+        for x in range(1, 10):
+            # print((height/y - box_height))
+            box = image[int(box_height*(y-1)):int(box_height*y), int(box_width*(x-1)):int(box_width*x)]
+            # cv2.imshow('box', box)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows() 
+            boxes.append(box)
+            
+    return boxes
+
 def process_nums(image):
     reader = easyocr.Reader(['en'])
-    result = reader.readtext(cropped)
+    result = reader.readtext(image)
 
-    digits = [detection[1] for detection in result]
+    digits = [detection[1] if detection[1] else None for detection in result]
     print(digits)
     return digits
 
@@ -78,7 +95,12 @@ def process_nums(image):
 preprocessed = preprocess_image(image)
 border = find_border(preprocessed)
 cropped = crop_image(border, preprocessed)
-process_nums(cropped)
+boxes = split_boxes(cropped)
+for box in boxes:
+    # cv2.imshow('box', box)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
+    process_nums(box)
 
 # reader = easyocr.Reader(['en'])
 # result = reader.readtext(cropped)
