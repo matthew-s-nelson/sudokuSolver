@@ -1,5 +1,7 @@
 import cv2
 import easyocr
+# from solver import *
+from copy import deepcopy
 
 
 # # Capture image from camera
@@ -84,10 +86,15 @@ def split_boxes(image):
 def process_nums(image):
     reader = easyocr.Reader(['en'])
     result = reader.readtext(image)
+    for detection in result:
+        if detection[1]:
+            return detection[1]
+        else:
+            return None
 
-    digits = [detection[1] if detection[1] else None for detection in result]
-    print(digits)
-    return digits
+    # digits = [detection[1] if detection[1] else None for detection in result]
+    # print(digits)
+    # return digits
 
 
 # Release the camera
@@ -96,11 +103,25 @@ preprocessed = preprocess_image(image)
 border = find_border(preprocessed)
 cropped = crop_image(border, preprocessed)
 boxes = split_boxes(cropped)
+count = 0
+grid = []
+row = []
 for box in boxes:
     # cv2.imshow('box', box)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows() 
-    process_nums(box)
+    if count < 8:
+        row.append(process_nums(box))
+        count += 1
+        print(row)
+    else:
+        row.append(process_nums(box))
+        grid.append(row)
+        print("row: ",row)
+        print("grid: ", grid)
+
+        count = 0
+        row = []
 
 # reader = easyocr.Reader(['en'])
 # result = reader.readtext(cropped)
