@@ -6,13 +6,8 @@ pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract'
 from solver import *
 from copy import deepcopy
 
-
-# # Capture image from camera
-# cap = cv2.VideoCapture(0)
-# ret, frame = cap.read()
-
 # Read image
-image = cv2.imread('image2.png')
+image = cv2.imread('image3.png')
 
 # Show the image
 # cv2.imshow('original', image) 
@@ -69,13 +64,7 @@ def split_boxes(image):
     boxes = []
     for y in range(1, 10):
         for x in range(1, 10):
-            # print((height/y - box_height))
             box = image[int(box_height*(y-1)):int(box_height*y), int(box_width*(x-1)):int(box_width*x)]
-            # if y == 9:
-            #     cv2.imshow('box', box)
-            #     cv2.waitKey(0)
-            #     cv2.destroyAllWindows()
-            #     print(process_nums(box))
             boxes.append(box)
             
     return boxes
@@ -84,17 +73,18 @@ def split_boxes(image):
 def tesseract(image):
     _, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-    custom_config = r'--oem 3 --psm 6'  # Adjust configuration if needed
+    custom_config = r'--oem 3 --psm 6'
     result = pytesseract.image_to_string(thresh, config=custom_config)
 
     # Extract digits from the result
-    digits = int(char) for char in result if char.isdigit()
+    digits = [int(char) for char in result if char.isdigit()]
 
-    return digits
+    if digits:
+        return digits[0]
+    else:
+        return None
 
 
-# Release the camera
-# cap.release()
 preprocessed = preprocess_image(image)
 border = find_border(preprocessed)
 
@@ -131,17 +121,11 @@ for box in boxes:
 # [None, None, None, None, 1, 9, None, None, 5],
 # [None, None, None, None, None, None, None, None, None]]
 
-# to_solve = sudokuBoard(grid)
+to_solve = sudokuBoard(grid)
 
-# print(str(to_solve))
-# if to_solve.solve():
-#     print(str(to_solve))
-# else:
-#     print("Can't be solved")
+print(str(to_solve))
+if to_solve.solve():
+    print(str(to_solve))
+else:
+    print("Can't be solved")
 
-# reader = easyocr.Reader(['en'])
-# result = reader.readtext(cropped)
-
-# for detection in result:
-#     text = detection[1]
-#     print(f"Detected text: {text}")
