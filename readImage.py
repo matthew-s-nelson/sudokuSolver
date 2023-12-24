@@ -1,6 +1,9 @@
 import cv2
-import easyocr
-# from solver import *
+# import easyocr
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract'
+
+from solver import *
 from copy import deepcopy
 
 
@@ -22,21 +25,13 @@ image = cv2.imread('image2.png')
 def preprocess_image(image):
     # Graysclae the image
     grayed = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow('grayed', grayed)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
     # Use gaussian blur to sharpen the image and reduce noise
     blurred = cv2.GaussianBlur(grayed, (5, 5), 0)
-    # cv2.imshow('blurred', blurred)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
     # Create a binary image. Helps to account for lighting differences in the image
     binary_image = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    # cv2.imshow('binary', binary_image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+
 
     return binary_image
 
@@ -76,31 +71,46 @@ def split_boxes(image):
         for x in range(1, 10):
             # print((height/y - box_height))
             box = image[int(box_height*(y-1)):int(box_height*y), int(box_width*(x-1)):int(box_width*x)]
-            # cv2.imshow('box', box)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows() 
+            # if y == 9:
+            #     cv2.imshow('box', box)
+            #     cv2.waitKey(0)
+            #     cv2.destroyAllWindows()
+            #     print(process_nums(box))
             boxes.append(box)
             
     return boxes
 
-def process_nums(image):
-    reader = easyocr.Reader(['en'])
-    result = reader.readtext(image)
-    for detection in result:
-        if detection[1]:
-            return detection[1]
-        else:
-            return None
+# def process_nums(image):
+#     reader = easyocr.Reader(['en'])
+#     result = reader.readtext(image)
+
+#     for detection in result:
+#         if detection[1]:
+#             return int(detection[1])
+#         else:
+#             return None
 
     # digits = [detection[1] if detection[1] else None for detection in result]
     # print(digits)
     # return digits
+
+def tesseract(image):
+    _, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    custom_config = r'--oem 3 --psm 6'  # Adjust configuration if needed
+    result = pytesseract.image_to_string(thresh, config=custom_config)
+
+    # Extract digits from the result
+    digits = [int(char) for char in result if char.isdigit()]
+
+    return digits
 
 
 # Release the camera
 # cap.release()
 preprocessed = preprocess_image(image)
 border = find_border(preprocessed)
+
 cropped = crop_image(border, preprocessed)
 boxes = split_boxes(cropped)
 count = 0
@@ -111,17 +121,36 @@ for box in boxes:
     # cv2.waitKey(0)
     # cv2.destroyAllWindows() 
     if count < 8:
-        row.append(process_nums(box))
+        row.append(tesseract(box))
         count += 1
         print(row)
     else:
-        row.append(process_nums(box))
+        row.append(tesseract(box))
         grid.append(row)
         print("row: ",row)
         print("grid: ", grid)
 
-        count = 0
-        row = []
+        # count = 0
+        # row = []
+
+
+# grid = [[None, 3, None, None, None, None, None, None, None],
+# [None, None, None, 1, 9, 5, None, None, None],
+# [None, 9, 8, None, None, None, None, 6, None],
+# [8, None, None, None, 6, None, None, None, None],
+# [4, None, None, None, None, 3, None, None, 1],
+# [None, None, None, None, 2, None, None, None, None],
+# [None, 6, None, None, None, None, 2, 8, None],
+# [None, None, None, None, 1, 9, None, None, 5],
+# [None, None, None, None, None, None, None, None, None]]
+
+# to_solve = sudokuBoard(grid)
+
+# print(str(to_solve))
+# if to_solve.solve():
+#     print(str(to_solve))
+# else:
+#     print("Can't be solved")
 
 # reader = easyocr.Reader(['en'])
 # result = reader.readtext(cropped)
