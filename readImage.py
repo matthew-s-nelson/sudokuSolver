@@ -80,19 +80,6 @@ def split_boxes(image):
             
     return boxes
 
-# def process_nums(image):
-#     reader = easyocr.Reader(['en'])
-#     result = reader.readtext(image)
-
-#     for detection in result:
-#         if detection[1]:
-#             return int(detection[1])
-#         else:
-#             return None
-
-    # digits = [detection[1] if detection[1] else None for detection in result]
-    # print(digits)
-    # return digits
 
 def tesseract(image):
     _, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
@@ -101,7 +88,7 @@ def tesseract(image):
     result = pytesseract.image_to_string(thresh, config=custom_config)
 
     # Extract digits from the result
-    digits = [int(char) for char in result if char.isdigit()]
+    digits = int(char) for char in result if char.isdigit()
 
     return digits
 
@@ -130,8 +117,8 @@ for box in boxes:
         print("row: ",row)
         print("grid: ", grid)
 
-        # count = 0
-        # row = []
+        count = 0
+        row = []
 
 
 # grid = [[None, 3, None, None, None, None, None, None, None],
