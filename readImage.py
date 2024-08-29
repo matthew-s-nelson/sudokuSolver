@@ -1,4 +1,5 @@
 import cv2
+from scanner import scan_image
 # import easyocr
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract'
@@ -6,15 +7,6 @@ pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract'
 from solver import *
 from copy import deepcopy
 
-# Read image
-image = cv2.imread('image3.png')
-
-# Show the image
-# cv2.imshow('original', image) 
-
-# When any key is pressed, the window closes
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
 # Preprocess the image
 
 def preprocess_image(image):
@@ -85,11 +77,14 @@ def tesseract(image):
         return None
 
 
-preprocessed = preprocess_image(image)
+preprocessed = scan_image('testing2.webp')
+cv2.imshow('preprocessed', preprocessed)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 border = find_border(preprocessed)
 
-cropped = crop_image(border, preprocessed)
-boxes = split_boxes(cropped)
+# cropped = crop_image(border, preprocessed)
+boxes = split_boxes(preprocessed)
 count = 0
 grid = []
 row = []
