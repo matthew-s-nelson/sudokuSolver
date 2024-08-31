@@ -58,6 +58,9 @@ class sudokuBoard:
 
         # Board can't be solved.
         return False
+    
+    def get_board(self):
+        return self.board
 
 
 

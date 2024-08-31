@@ -52,8 +52,8 @@ def tesseract(image):
     return None
 
 
-def get_grid():
-    preprocessed = scan_image('image.png')
+def get_grid(filePath):
+    preprocessed = scan_image(filePath)
 
     boxes = split_boxes(preprocessed)
     count = 0
@@ -83,12 +83,12 @@ def get_grid():
             row = []
     return grid
 
-grid = get_grid()
-to_solve = sudokuBoard(grid)
+# grid = get_grid()
+# to_solve = sudokuBoard(grid)
 
-print(str(to_solve))
-if to_solve.solve():
-    print(str(to_solve))
-else:
-    print("Can't be solved")
+# print(str(to_solve))
+# if to_solve.solve():
+#     print(str(to_solve))
+# else:
+#     print("Can't be solved")
 
