@@ -3,41 +3,76 @@
 <head>
     <title>Sudoku Solver</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 50px; /* Space between the two tables */
+            margin-top: 20px;
+        }
         table {
-            margin: auto;
-            margin-top: 50px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
         }
         td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
             width: 50px;
             height: 50px;
             text-align: center;
             vertical-align: middle;
             font-size: 20px;
+            background-color: #fff;
+        }
+        td:nth-child(3n) {
+            border-right: 2px solid #333;
+        }
+        tr:nth-child(3n) td {
+            border-bottom: 2px solid #333;
+        }
+        td.empty {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
-    <h1>Sudoku Solution</h1>
-    <h2>Original Board</h2>
-    <table>
-        {% for row in originalBoard %}
-            <tr>
-                {% for cell in row %}
-                    <td>{% if cell is none %}{% else %}<b>{{ cell }}</b>{% endif %}</td>
+    <h1>Sudoku Solver</h1>
+    <div class="container">
+        <div>
+            <h2>Original Board</h2>
+            <table>
+                {% for row in originalBoard %}
+                    <tr>
+                        {% for cell in row %}
+                            <td class="{% if cell is none %}empty{% else %}filled{% endif %}">{% if cell is none %}{% else %}<b>{{ cell }}</b>{% endif %}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
-    <h2>Solution Board</h2>
-    <table>
-        {% for row in solutionBoard %}
-            <tr>
-                {% for cell in row %}
-                    <td>{{ cell }}</td>
+            </table>
+        </div>
+        <div>
+            <h2>Solution Board</h2>
+            <table>
+                {% for row in solutionBoard %}
+                    <tr>
+                        {% for cell in row %}
+                            <td class="{% if cell is none %}empty{% else %}filled{% endif %}">{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
