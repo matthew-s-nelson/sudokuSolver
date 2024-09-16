@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect
 import os
-from readImage import get_grid
-from solver import sudokuBoard
+from src.readImage import get_grid
+from src.solver import sudokuBoard
 from copy import deepcopy
 
 app = Flask(__name__)

@@ -1,9 +1,9 @@
 import cv2
-from scanner import scan_image
+from src.scanner import scan_image
 import pytesseract
 import numpy as np
 pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract'
-from solver import *
+from src.solver import *
 from copy import deepcopy
 
 def split_boxes(image):
